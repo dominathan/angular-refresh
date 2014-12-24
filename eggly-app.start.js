@@ -41,6 +41,8 @@ angular.module("Eggly", [
     function startCreating() {
       $scope.isCreating = true;
       $scope.isEditing = false;
+
+      resetCreateForm();
     }
 
     function cancelCreating() {
@@ -50,6 +52,8 @@ angular.module("Eggly", [
     function startEditing() {
       $scope.isCreating = false;
       $scope.isEditing = true;
+
+      resetCreateForm();
     }
 
     function cancelEditing() {
@@ -65,6 +69,7 @@ angular.module("Eggly", [
       return $scope.isEditing && !$scope.isCreating;
     }
 
+
     $scope.startCreating = startCreating;
     $scope.cancelCreating = cancelCreating;
     $scope.startEditing = startEditing;
@@ -72,11 +77,55 @@ angular.module("Eggly", [
     $scope.shouldShowEditing = shouldShowEditing;
     $scope.shouldShowCreating = shouldShowCreating;
 
+    // CRUD
 
+    function resetCreateForm() {
+      $scope.newBookmark = {
+        title: "",
+        url: "",
+        category: $scope.currentCategory
+      }
+    }
+    function createBookmark(bookmark) {
+      bookmark.id = $scope.bookmarks.length; //for demonstration id
+      $scope.bookmarks.push(bookmark);
 
+      resetCreateForm();
+    }
 
+    $scope.createBookmark = createBookmark;
 
+    $scope.editedBookmark = null;
 
+    function setEditedBookmark(bookmark) {
+      $scope.editedBookmark = angular.copy(bookmark);
+    }
+
+    function updateBookmark(bookmark) {
+      var index = _.findIndex($scope.bookmarks, function(b){
+        return b.id == bookmark.id
+      });
+      $scope.bookmarks[index] = bookmark;
+
+      $scope.editedBookmark = null;
+      $scope.isEditing = false;
+    }
+
+    function isSelectedBookmark(bookmarkId) {
+      return $scope.editedBookmark !== null && $scope.editedBookmark.id === bookmarkId;
+    }
+
+    $scope.setEditedBookmark = setEditedBookmark;
+    $scope.updateBookmark = updateBookmark;
+    $scope.isSelectedBookmark = isSelectedBookmark;
+
+    function deleteBookmark(bookmark) {
+      _.remove($scope.bookmarks, function(b){
+        return b.id == bookmark.id;
+      });
+    }
+
+    $scope.deleteBookmark = deleteBookmark;
 
   })
 ;
